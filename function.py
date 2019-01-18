@@ -1,15 +1,21 @@
 import sys
+import time
 import boto3
 from pprint import pprint
 
-ec2 = boto3.client('ec2')
+from current_usage import AccountUsage
+
+
 # !!!! Added region check/sort
 def get_instance_limits():
-    response = ec2.describe_instances()
-    instances = response['Reservations']
-    # pprint(instances)
-    for instance in instances:
-        pprint(instance['Instances'][0]['InstanceType'])
+    print 'Starting function'
+    start_time = time.time()
+    current = AccountUsage()
+
+    pprint(current)
+
+    end_time = time.time() - start_time
+    print 'Time required: {0:.2f} s'.format(end_time)
     
     
     
