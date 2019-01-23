@@ -1,5 +1,6 @@
 {
-    "coffayhouse" : {
+    "Account" : "coffayhouse",
+    "us-east-1" : {
         "c1.medium" : 20,
         "c1.xlarge" : 20,
         "c3.2xlarge" : 20,

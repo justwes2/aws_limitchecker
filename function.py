@@ -12,8 +12,11 @@ def get_instance_limits():
     start_time = time.time()
     current = AccountUsage()
 
-    pprint(current)
+    pprint(current.current)
 
+    current.get_limits()
+
+    current.compare()
     end_time = time.time() - start_time
     print 'Time required: {0:.2f} s'.format(end_time)
     
