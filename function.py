@@ -1,24 +1,42 @@
 import sys
-import time
 import boto3
-from pprint import pprint
+from time import time
 
+from connections import Connections
 from current_usage import AccountUsage
+from email_creation import EmailGenerator
+from report_generation import ReportGenerator
+
+def lambda_handler(event, context, **kwargs):
+    print('Starting function\n-------------------------------------------------')
+    start_time = time()
+    print('Loading account credentials')
+    accounts = Connections()
 
 
-# !!!! Added region check/sort
-def get_instance_limits():
-    print 'Starting function'
-    start_time = time.time()
-    current = AccountUsage()
+    print('Gathering Usage and Limit Data')
+    comparisons = {}
+    for count, account in enumerate(accounts.env_names):
+        comparisons[account] = AccountUsage(accounts.env_names[count], accounts.connection_list[count])
+        comparisons[account].get_limits()
+        comparisons[account].compare()
 
-    pprint(current.current)
+    print('Generationg Email')
+    email = EmailGenerator(comparisons)
+    email.create_html
+    email.send_email
 
-    current.get_limits()
+    print('Creating Report')
+    report = ReportGenerator(email.utilization)
+    json = report.write_json()
+    csv = report.write_csv
 
-    current.compare()
-    end_time = time.time() - start_time
-    print 'Time required: {0:.2f} s'.format(end_time)
+    print('Uplaoding Report to S3')
+    push_json = report.push_to_s3(report.metadata)
+    push_csv = report.push_to_s3(report.report)
+
+    end_time = time() - start_time
+    print('Time required: {0:.2f} s'.format(end_time))
     
     
     
